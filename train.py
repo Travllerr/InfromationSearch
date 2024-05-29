@@ -10,6 +10,7 @@ import sys
 import argparse
 from AlexNet import alex_net
 from VGG import vgg
+from GoogLeNet import googlenet
 
 
 def main(args):
@@ -19,7 +20,8 @@ def main(args):
     # 要求训练集直接返回为tensor而不是图片
     trans = [
     transforms.ToTensor(),
-    transforms.Resize(224)
+    # transforms.Resize(224),
+    transforms.Resize(96)
              ]
     trans = transforms.Compose(trans)
     # 图片直接全部读入内存中
@@ -35,9 +37,6 @@ def main(args):
 
     # 根据超参数设定，定义批大小
     batch_size = args.batch_size
-    # 选择os.cpu_count()、batch_size、8中最小值作为num_workers
-    # os.cpu_count()：Python中的方法用于获取系统中的CPU数量。如果系统中的CPU数量不确定，则此方法返回None。
-    # 如果想进一步了解num_workers的知识，可以上网查阅
     nw = min([
         os.cpu_count(),
         batch_size if batch_size > 1 else 0,
@@ -66,14 +65,15 @@ def main(args):
 
     print("Using {} for train,using {} for val".format(train_num, val_num))
 
-
     # net = alex_net()
 
-    conv_arch = ((1, 64), (1, 128), (2, 256), (2, 512), (2, 512))
-    ratio = 4
-    small_conv_arch = [(pair[0], pair[1] // ratio) for pair in conv_arch]
-    net = vgg(small_conv_arch)
+    # vgg11模型较为复杂，对于简单数据集合，选择降低通道数
+    # conv_arch = ((1, 64), (1, 128), (2, 256), (2, 512), (2, 512))
+    # ratio = 4
+    # small_conv_arch = [(pair[0], pair[1] // ratio) for pair in conv_arch]
+    # net = vgg(small_conv_arch)
 
+    net = googlenet()
 
     def init_weights(m):
         """使用nn自带的xavier初始化"""
@@ -158,14 +158,16 @@ def arguments():
         type=float,
         # 即使模型很快收敛也可能需要调正学习率
         # 因为学习率会影响泛化能力，可能会到达不一样的谷底
-        default=0.01,
+        default=0.1,
         help='网络训练学习率。建议以10的倍数增大或减小'
     )
     parser.add_argument(
         '--batch_size',
         type=int,
         # vgg13批大小太大容易导致模型loss很高，同时训练速度也会下降
-        default=64,
+        # 批太大同样也会影响模型的泛化能力
+        # 批不一定需要占据所有的内存，批设置略低于内存？
+        default=128,
         help='批大小，一般设置范围在4~32之间，硬件设备性能足够时可以设置的大一些'
     )
 

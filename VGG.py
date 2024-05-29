@@ -15,7 +15,6 @@ def vgg_block(num_convs, in_channels, out_channels):
 
 def vgg(conv_arch):
     conv_blks = []
-    # rgb三通道
     in_channels = 1
     for (num_convs, out_channels) in conv_arch:
         conv_blks.append(vgg_block(num_convs, in_channels, out_channels))
@@ -25,4 +24,3 @@ def vgg(conv_arch):
                          nn.Linear(out_channels * 7 * 7, 4096), nn.ReLU(),
                          nn.Dropout(0.5), nn.Linear(4096, 4096), nn.ReLU(),
                          nn.Dropout(0.5), nn.Linear(4096, 10))
-
