@@ -16,6 +16,7 @@ from ConfusionMatrix import ConfusionMatrix
 from InformationSearch.AlexNet import alex_net
 from VGG import vgg
 from GoogLeNet import googlenet
+from ResNet import resnet
 
 def main(args):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -40,7 +41,9 @@ def main(args):
     # small_conv_arch = [(pair[0], pair[1] // ratio) for pair in conv_arch]
     # model = vgg(small_conv_arch)
 
-    model = googlenet()
+    # model = googlenet()
+
+    model = resnet()
 
     # 通过指定的权重文件路径，向网络模型上加载这个权重
     weight_path = args.weight_path

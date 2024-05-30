@@ -11,6 +11,7 @@ import argparse
 from AlexNet import alex_net
 from VGG import vgg
 from GoogLeNet import googlenet
+from ResNet import resnet
 
 
 def main(args):
@@ -73,7 +74,9 @@ def main(args):
     # small_conv_arch = [(pair[0], pair[1] // ratio) for pair in conv_arch]
     # net = vgg(small_conv_arch)
 
-    net = googlenet()
+    # net = googlenet()
+
+    net = resnet()
 
     def init_weights(m):
         """使用nn自带的xavier初始化"""
@@ -158,7 +161,7 @@ def arguments():
         type=float,
         # 即使模型很快收敛也可能需要调正学习率
         # 因为学习率会影响泛化能力，可能会到达不一样的谷底
-        default=0.1,
+        default=0.05,
         help='网络训练学习率。建议以10的倍数增大或减小'
     )
     parser.add_argument(
@@ -167,7 +170,7 @@ def arguments():
         # vgg13批大小太大容易导致模型loss很高，同时训练速度也会下降
         # 批太大同样也会影响模型的泛化能力
         # 批不一定需要占据所有的内存，批设置略低于内存？
-        default=128,
+        default=150,
         help='批大小，一般设置范围在4~32之间，硬件设备性能足够时可以设置的大一些'
     )
 
